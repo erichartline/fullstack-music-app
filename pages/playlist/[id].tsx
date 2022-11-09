@@ -3,15 +3,30 @@ import GradientLayout from '../../components/GradientLayout'
 import prisma from '../../lib/prisma'
 import { validateToken } from '../../lib/auth'
 
+const getBGColor = (id) => {
+  const colors = [
+    'red',
+    'green',
+    'blue',
+    'purple',
+    'orange',
+    'gray',
+    'teal',
+    'yellow',
+  ]
+
+  return colors[id - 1] || colors[Math.floor(Math.random() * colors.length)]
+}
+
 const Playlist = ({ playlist }) => {
   return (
     <GradientLayout
-      color="red"
-      description=""
-      image=""
-      roundImage
-      subtitle=""
-      title=""
+      color={getBGColor(playlist.id)}
+      description={`${playlist.songs.length} songs`}
+      image={`https://picsum.photos/400?random=${playlist.id}`}
+      roundImage={false}
+      subtitle="playlist"
+      title={playlist.name}
     >
       <Box>{playlist.name}</Box>
     </GradientLayout>
