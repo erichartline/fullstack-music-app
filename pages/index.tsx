@@ -2,6 +2,7 @@ import { Box, Flex, Text } from '@chakra-ui/layout'
 import { Image } from '@chakra-ui/react'
 import GradientLayout from '../components/GradientLayout'
 import prisma from '../lib/prisma'
+import { useMe } from '../lib/hooks'
 
 type Props = {
   artists: Array<{
@@ -11,12 +12,14 @@ type Props = {
 }
 
 const Home = ({ artists }: Props) => {
+  const { user } = useMe()
+
   return (
     <GradientLayout
       color="purple"
       subtitle="profile"
-      title="Art Vandelay"
-      description="15 public playlists"
+      title={`${user?.firstName} ${user?.lastName}`}
+      description={`${user?.playlistsCount} public playlists`}
       image="https://frontendmasters.github.io/fullstack-app-next-website/images/profile.png"
       roundImage
     >
