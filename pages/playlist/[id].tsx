@@ -29,7 +29,7 @@ const Playlist = ({ playlist }) => {
       subtitle="playlist"
       title={playlist.name}
     >
-      <SongsTable />
+      <SongsTable songs={playlist.songs} />
     </GradientLayout>
   )
 }
