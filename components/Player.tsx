@@ -193,8 +193,7 @@ const Player = ({ activeSong, songs }: Props) => {
               onChangeStart={() => setIsSeeking(true)}
               step={0.1}
               min={0}
-              // @ts-ignore
-              max={duration ? duration.toFixed(2) : 0}
+              max={duration ? (duration.toFixed(2) as unknown as number) : 0}
               value={[seek]}
             >
               <RangeSliderTrack bg="gray.800">
