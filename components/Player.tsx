@@ -21,6 +21,7 @@ import {
   MdShuffle,
 } from 'react-icons/md'
 import { useStoreActions } from 'easy-peasy'
+import { formatTime } from '../lib/formatters'
 
 type Props = {
   activeSong: {
@@ -33,6 +34,7 @@ const Player = ({ activeSong, songs }: Props) => {
   const [playing, setPlaying] = useState(true)
   const [index, setIndex] = useState(0)
   const [seek, setSeek] = useState(0.0)
+  const [isSeeking, setIsSeeking] = useState(false)
   const [repeat, setRepeat] = useState(false)
   const [shuffle, setShuffle] = useState(false)
   const [duration, setDuration] = useState(0.0)
@@ -59,9 +61,34 @@ const Player = ({ activeSong, songs }: Props) => {
       return state === songs.length - 1 ? 0 : state + 1
     })
 
+  const onEnd = () => {
+    if (repeat) {
+      setSeek(0)
+      soundRef.current.seek(0)
+    } else {
+      nextSong()
+    }
+  }
+
+  const onLoad = () => {
+    const songDuration = soundRef.current.duration()
+    setDuration(songDuration)
+  }
+
+  const onSeek = (event) => {
+    setSeek(parseFloat(event[0]))
+    soundRef.current.seek(event[0])
+  }
+
   return (
     <Box>
-      <ReactHowler playing={playing} src={activeSong?.url} ref={soundRef} />
+      <ReactHowler
+        playing={playing}
+        src={activeSong?.url}
+        ref={soundRef}
+        onLoad={onLoad}
+        onEnd={onEnd}
+      />
       <Center color="gray.600">
         <ButtonGroup>
           <IconButton
@@ -131,9 +158,13 @@ const Player = ({ activeSong, songs }: Props) => {
               /* eslint-disable-next-line jsx-a11y/aria-proptypes */
               aria-label={['min', 'max']}
               id="player-range"
+              onChange={onSeek}
+              onChangeEnd={() => setIsSeeking(false)}
+              onChangeStart={() => setIsSeeking(true)}
               step={0.1}
               min={0}
-              max={321}
+              max={duration ? duration.toFixed(2) : 0}
+              value={[seek]}
             >
               <RangeSliderTrack bg="gray.800">
                 <RangeSliderFilledTrack bg="gray.600" />
@@ -142,7 +173,7 @@ const Player = ({ activeSong, songs }: Props) => {
             </RangeSlider>
           </Box>
           <Box width="10%" textAlign="right">
-            <Text fontSize="xs">5:44</Text>
+            <Text fontSize="xs">{formatTime(duration)}</Text>
           </Box>
         </Flex>
       </Box>
