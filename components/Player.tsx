@@ -36,6 +36,7 @@ const Player = ({ activeSong, songs }: Props) => {
   const [repeat, setRepeat] = useState(false)
   const [shuffle, setShuffle] = useState(false)
   const [duration, setDuration] = useState(0.0)
+  const soundRef = useRef(null)
 
   const setPlayState = (value) => setPlaying(value)
 
@@ -43,9 +44,24 @@ const Player = ({ activeSong, songs }: Props) => {
 
   const handleRepeat = () => setRepeat((state) => !state)
 
+  const prevSong = () =>
+    setIndex((state) => (state ? state - 1 : songs.length - 1))
+
+  const nextSong = () =>
+    setIndex((state) => {
+      if (shuffle) {
+        const next = Math.floor(Math.random() * songs.length)
+        if (next === state) {
+          return nextSong()
+        }
+        return next
+      }
+      return state === songs.length - 1 ? 0 : state + 1
+    })
+
   return (
     <Box>
-      <ReactHowler playing={playing} src={activeSong?.url} />
+      <ReactHowler playing={playing} src={activeSong?.url} ref={soundRef} />
       <Center color="gray.600">
         <ButtonGroup>
           <IconButton
@@ -61,6 +77,7 @@ const Player = ({ activeSong, songs }: Props) => {
             aria-label="skip previous"
             fontSize="24px"
             icon={<MdSkipPrevious />}
+            onClick={prevSong}
             outline="none"
             variant="link"
           />
@@ -89,6 +106,7 @@ const Player = ({ activeSong, songs }: Props) => {
             aria-label="skip next"
             fontSize="24px"
             icon={<MdSkipNext />}
+            onClick={nextSong}
             outline="none"
             variant="link"
           />
