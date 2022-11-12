@@ -40,6 +40,21 @@ const Player = ({ activeSong, songs }: Props) => {
   const [duration, setDuration] = useState(0.0)
   const soundRef = useRef(null)
 
+  useEffect(() => {
+    let timerId
+
+    if (playing && !isSeeking) {
+      const callback = () => {
+        setSeek(soundRef.current.seek())
+        timerId = requestAnimationFrame(callback)
+      }
+      timerId = requestAnimationFrame(callback)
+      return () => cancelAnimationFrame(timerId)
+    }
+
+    cancelAnimationFrame(timerId)
+  }, [playing, isSeeking])
+
   const setPlayState = (value) => setPlaying(value)
 
   const handleShuffle = () => setShuffle((state) => !state)
@@ -151,7 +166,7 @@ const Player = ({ activeSong, songs }: Props) => {
       <Box color="gray.600">
         <Flex justify="center" align="center">
           <Box width="10%">
-            <Text fontSize="xs">1:21</Text>
+            <Text fontSize="xs">{formatTime(seek)}</Text>
           </Box>
           <Box width="80%">
             <RangeSlider
